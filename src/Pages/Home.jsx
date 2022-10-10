@@ -6,7 +6,8 @@ import { sendRequest } from '../Utils/apiService';
 const HomePage = () => {
     const [mapData, setMapData] = useState();
     const [centerPoints, setCenterPoints] = useState();
-    const [mapMakers, setMapMakers] = useState()
+    const [mapMakers, setMapMakers] = useState();
+    const [polygonData, setPolygonData] = useState();
     useEffect(() => {
         const fetchMaps = async () => {
             try {
@@ -21,14 +22,10 @@ const HomePage = () => {
                 let response = await sendRequest(url, init);
                 if (response && response.success) {
                     response = response.data
-                    setCenterPoints(response && response && response.length && JSON.parse(response[0].cordinates).coordinates);
-                    const mapPoints = response.map(item => {
-                        const parsedData = JSON.parse(item.cordinates);
-                        return { lng: parsedData?.coordinates[0], lat: parsedData?.coordinates[1] }
-                    })
-
-                    setMapMakers(mapPoints)
-                    setMapData(response)
+                    setCenterPoints(response?.pointData?.centerPoints);
+                    setMapMakers(response?.pointData?.mapPoints);
+                    setMapData(response);
+                    setPolygonData(response?.polygonData)
                 }
 
             } catch (error) {
@@ -39,7 +36,7 @@ const HomePage = () => {
     }, [])
 
     return (<>
-        {mapData && mapMakers && centerPoints ? <MapComponent mapData={mapData} mapMakers={mapMakers} centerPoints={centerPoints} /> : null}
+        {mapData && mapMakers && centerPoints ? <MapComponent mapData={mapData} mapMakers={mapMakers} centerPoints={centerPoints} polygonData={polygonData} /> : null}
     </>
     )
 }
