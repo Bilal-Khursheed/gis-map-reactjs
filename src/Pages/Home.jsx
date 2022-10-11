@@ -10,17 +10,22 @@ const HomePage = () => {
     const [polygonData, setPolygonData] = useState([]);
     const [limit, setLimit] = useState(1000);
     const [offset, setOffset] = useState(0);
+    // -73.97395491223583,40.650719856408784,-74.02588247876415,40.62101884532627,
+    const [lngWest, setLngWest] = useState(-73.97395491223583);
+    const [latSouth, setLatSouth] = useState(40.650719856408784);
+    const [lngEast, setLngEast] = useState(-74.02588247876415);
+    const [latNorth, setLatNorth] = useState(40.62101884532627);
     const [totalCount, setTotalCount] = useState(0)
     useEffect(() => {
-        fetchMaps(limit, offset)
-    }, []);
+        fetchMaps(lngWest, latSouth, lngEast, latNorth)
+    }, [lngWest, latSouth, lngEast, latNorth]);
+
+    console.log("Lat lng=====>>>", lngWest, latSouth, lngEast, latNorth, totalCount)
 
 
-
-
-    const fetchMaps = async (limit, offset) => {
+    const fetchMaps = async (lngWest, latSouth, lngEast, latNorth) => {
         try {
-            let url = FETCH_MAP_DATA + `?limit=${limit}&offset=${offset}`;
+            let url = FETCH_MAP_DATA + `?lngWest=${lngWest}&latSouth=${latSouth}&lngEast=${lngEast}&latNorth=${latNorth}`;
             let init = {
                 method: "GET",
                 headers: {
@@ -34,14 +39,14 @@ const HomePage = () => {
                 setCenterPoints(response?.pointData?.centerPoints);
                 setMapMakers(response?.pointData?.mapPoints);
                 setMapData(response);
-                setPolygonData((recent) => [...response?.polygonData?.polygons, ...recent]);
+                setPolygonData(response?.polygonData?.polygons);
                 setTotalCount(response?.polygonData?.totalCount);
-                if (offset < response?.polygonData?.totalCount) {
-                    setTimeout(() => {
-                        fetchMaps(limit, (offset + limit))
-                    }, 5000);
+                // if (offset < response?.polygonData?.totalCount) {
+                //     setTimeout(() => {
+                //         fetchMaps(limit, (offset + limit))
+                //     }, 5000);
 
-                }
+                // }
             }
 
         } catch (error) {
@@ -51,7 +56,7 @@ const HomePage = () => {
     console.log("here is data===>>>", polygonData)
 
     return (<>
-        {mapData && mapMakers && centerPoints ? <MapComponent mapData={mapData} mapMakers={mapMakers} centerPoints={centerPoints} polygonData={polygonData} /> : null}
+        {mapData && mapMakers && centerPoints ? <MapComponent setLatNorth={setLatNorth} setLatSouth={setLatSouth} setLngEast={setLngEast} setLngWest={setLngWest} mapData={mapData} mapMakers={mapMakers} centerPoints={centerPoints} polygonData={polygonData} /> : null}
     </>
     )
 }

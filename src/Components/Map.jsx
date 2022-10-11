@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createRef, useCallback, useEffect, useRef, useState } from "react";
+import _debounce from 'lodash/debounce';
 
 import {
     withGoogleMap,
@@ -19,30 +20,59 @@ import {
 //     { lng: -73.94718884609291, lat: 40.73716326270996 },
 // ];
 
-const MapWithAMarker = withGoogleMap(({ centerPoints, mapMakers, polygonData }) => {
+const MapWithAMarker = withGoogleMap(({ centerPoints, mapMakers, polygonData, setLatNorth, setLatSouth, setLngEast, setLngWest }) => {
     const [selectedElement, setSelectedElement] = useState(null);
     const [activeMarker, setActiveMarker] = useState();
 
-    const mapRef = useRef(null);
-    console.log("here is reffff===>>>", mapRef.current)
+
+    let mapRef = createRef(null);
+    // console.log("here is reffff===>>>",bounds)
     // Fit bounds function
-    const fitBounds = () => {
-        const bounds = new window.google.maps.LatLngBounds();
-        mapMakers.map(item => {
-            bounds.extend(item.cordinates);
-            return item.id
-        });
-        mapRef.current.fitBounds(bounds);
-    };
+    // const fitBounds = () => {
+    //     const bounds = new window.google.maps.LatLngBounds();
+    //     mapMakers.map(item => {
+    //         bounds.extend(item.cordinates);
+    //         return item.id
+    //     });
+    //     mapRef.current.fitBounds(bounds);
+    // };
 
     // Fit bounds on mount, and when the markers change
-    useEffect(() => {
-        fitBounds();
-    }, [mapMakers]);
+    // useEffect(() => {
+    //     fitBounds();
+    // }, [mapMakers]);
+    // useEffect(() => {
+    //     console.log(mapRef, "mapref-=====")
+    //     if (mapRef && mapRef.current !== null && typeof mapRef?.getBounds !== "undefined") {
+    //         setLatNorth(mapRef.getBounds()?.getNorthEast().lat());
+    //         setLatSouth(mapRef.getBounds()?.getSouthWest().lat());
+    //         setLngEast(mapRef.getBounds()?.getNorthEast().lng());
+    //         setLngWest(mapRef.getBounds()?.getSouthWest().lng())
+    //     }
+    // }, [mapRef]);
+    const handleDebounceFn = (mapRef) => {
+        console.log("calling debounce fn====>>>")
+        // if (mapRef && mapRef.current !== null && typeof mapRef?.getBounds !== "undefined") {
+        setLatNorth(mapRef?.getBounds()?.getNorthEast().lat());
+        setLatSouth(mapRef?.getBounds()?.getSouthWest().lat());
+        setLngEast(mapRef?.getBounds()?.getNorthEast().lng());
+        setLngWest(mapRef?.getBounds()?.getSouthWest().lng())
+        // }
+    };
+    const handleBoundsChange = useCallback(_debounce(handleDebounceFn, 1000), []);
+
+
+
 
     return <GoogleMap
-        defaultZoom={4}
-        ref={mapRef}
+        defaultZoom={17}
+        ref={ref => mapRef = ref}
+        onClick={(e) => {
+            console.log("google map e data===>>>", e.latLng.lat(), 'lng===>>>', e.latLng.lng());
+        }}
+        onBoundsChanged={() => {
+            if (mapRef && mapRef.current !== null && typeof mapRef?.getBounds !== "undefined") handleBoundsChange(mapRef)
+        }}
         // defaultCenter={{ lng: props?.centerPoints && parseInt(props?.centerPoints[0]), lat: props?.centerPoints && parseInt(props?.centerPoints[1]) }}
         // defaultCenter={{ lng: -73.93279080176559, lat: 40.727263865864586 }}
         defaultCenter={centerPoints}
@@ -63,7 +93,7 @@ const MapWithAMarker = withGoogleMap(({ centerPoints, mapMakers, polygonData }) 
                     >
                         {activeMarker === ind ? (
                             <InfoWindow onCloseClick={() => setActiveMarker(null)} key={ind + 1}>
-                                <div><h3>{selectedElement?.region}</h3>
+                                <div><h3>{selectedElement?.region}</h3>first
                                     <label>Address: {selectedElement?.address}</label>
                                     <span>Postal Code: {selectedElement?.postcode}</span>
                                 </div>
@@ -99,10 +129,14 @@ const MapWithAMarker = withGoogleMap(({ centerPoints, mapMakers, polygonData }) 
     </GoogleMap>
 }
 );
-const MapChart = ({ mapData, centerPoints, mapMakers, polygonData }) => {
+const MapChart = ({ mapData, centerPoints, mapMakers, polygonData, setLatNorth, setLatSouth, setLngEast, setLngWest }) => {
 
     return (
         <MapWithAMarker
+            setLatNorth={setLatNorth}
+            setLatSouth={setLatSouth}
+            setLngEast={setLngEast}
+            setLngWest={setLngWest}
             containerElement={<div style={{ height: `100vh` }} />}
             mapElement={<div style={{ height: `100%` }} />}
             mapData={mapData}
