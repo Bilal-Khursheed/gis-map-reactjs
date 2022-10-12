@@ -1,8 +1,8 @@
 
-import HomePage from './Pages/Home';
+import RouterConfig from './Routes';
 function App() {
   return (
-    <HomePage/>
+    <RouterConfig/>
   );
 }
 

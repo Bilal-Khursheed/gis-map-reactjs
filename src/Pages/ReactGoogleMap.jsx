@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import MapComponent from '../Components/Map'
+import MapComponent from '../Components/ReactGoogleMap'
 import { FETCH_MAP_DATA } from '../Settings/Constant';
 import { sendRequest } from '../Utils/apiService';
 
-const HomePage = () => {
-    const [centerPoints, setCenterPoints] = useState();
-    const [mapMakers, setMapMakers] = useState();
+const ReactGoogleMap = () => {
+    const [centerPoints] = useState({lat: 40.63587100249999, lng: -73.99991869549999});
+    const [mapMakers] = useState();
     const [polygonData, setPolygonData] = useState([]);
+    // lat: 40.63587100249999, lng: -73.99991869549999}
     // -73.98442970695503 40.633985690721445 -73.97144781532295 40.64141074027972
     const [lngWest, setLngWest] = useState(-73.98442970695503);
     const [latSouth, setLatSouth] = useState(40.633985690721445);
@@ -28,8 +29,8 @@ const HomePage = () => {
             let response = await sendRequest(url, init);
             if (response && response.success) {
                 response = response.data
-                setCenterPoints(response?.pointData?.centerPoints);
-                setMapMakers(response?.pointData?.mapPoints);
+                // setCenterPoints(response?.pointData?.centerPoints);
+                // setMapMakers(response?.pointData?.mapPoints);
                 setPolygonData(response?.polygonData?.polygons);
             }
 
@@ -38,9 +39,11 @@ const HomePage = () => {
         }
     }
     return (<>
-        {mapMakers && centerPoints && polygonData ? <MapComponent setLatNorth={setLatNorth} setLatSouth={setLatSouth} setLngEast={setLngEast} setLngWest={setLngWest} mapMakers={mapMakers} centerPoints={centerPoints} polygonData={polygonData} /> : null}
+        {centerPoints && polygonData ? <MapComponent setLatNorth={setLatNorth} setLatSouth={setLatSouth} setLngEast={setLngEast} setLngWest={setLngWest} mapMakers={mapMakers} centerPoints={centerPoints} polygonData={polygonData} /> : null}
     </>
     )
 }
 
-export default HomePage
+
+
+export default ReactGoogleMap

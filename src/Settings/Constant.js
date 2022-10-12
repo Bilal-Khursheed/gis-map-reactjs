@@ -7,4 +7,5 @@
  /**
   * Fetch map location APIs
   */
- export  const FETCH_MAP_DATA = "gis-queries/cities"
+ export  const FETCH_MAP_DATA = "gis-queries/cities";
+ export const FETCH_MAP_DATA_GL = 'gis-queries/geojson'
