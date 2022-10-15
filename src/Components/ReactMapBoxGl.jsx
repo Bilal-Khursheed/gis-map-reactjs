@@ -3,14 +3,17 @@ import _debounce from 'lodash/debounce';
 import Map, { Layer, Source } from "react-map-gl";
 
 const layerStyle = {
-  id: 'point',
-  type: 'fill',
+  id: "zoneomics",
+  type: "fill",
   paint: {
-    'fill-color': '#FF008A',
-    'fill-opacity': 0.2
-
-  }
+    // "fill-color": ["match", ["get", "z"], ["literal", COUNTRY_PALETTE]],
+    // "fill-color": ["at", ["get", "layerName"], 'zones','red'],
+    "fill-color":'pink',
+    "fill-outline-color": "red",
+    "fill-opacity": 0.2,
+  },
 };
+
 const MapChart = ({ polygonData, setLatNorth, setLatSouth, setLngEast, setLngWest }) => {
   const MAPBOX_TOKEN = 'pk.eyJ1IjoiaGFzbmF0dWxoYXEiLCJhIjoiY2wwdzBjb3JrMTc3ajNkbjUyaDljbG8zcyJ9.zR9o-L0WGPt1JKTHd0oUFg';
   let mapRef = createRef(null);
@@ -41,7 +44,7 @@ const MapChart = ({ polygonData, setLatNorth, setLatSouth, setLngEast, setLngWes
         console.log("google map e data===>>>", e.lngLat.lat, 'lng===>>>', e.lngLat.lng);
       }}
       mapboxAccessToken={MAPBOX_TOKEN}
-      mapStyle="mapbox://styles/mapbox/streets-v9"
+      mapStyle="mapbox://styles/mapbox/streets-v11"
 
     >
       <Source id="my-data" type="geojson" data={polygonData}>

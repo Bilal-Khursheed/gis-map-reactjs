@@ -1,3 +1,4 @@
+import MVTMap from "../Components/MVTMap";
 import ReactGoogleMap from "../Pages/ReactGoogleMap";
 import ReactMapGl from '../Pages/ReaxctMapGl'
 
@@ -11,6 +12,10 @@ const getRoutes = () => {
         {
             element: <ReactMapGl />,
             path: '/map2'
+        },
+        {
+            element: <MVTMap />,
+            path: '/map3'
         },
 
     ];
